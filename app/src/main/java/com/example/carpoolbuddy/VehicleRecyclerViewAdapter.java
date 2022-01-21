@@ -58,7 +58,6 @@ public class VehicleRecyclerViewAdapter extends RecyclerView.Adapter<VehicleView
         holder.owner.setText("Owner: " + owner);
         holder.basePrice.setText("Base price: $" + basePrice);
         holder.capacity.setText("Capacity: " + capacity + " people");
-
     }
 
     @Override

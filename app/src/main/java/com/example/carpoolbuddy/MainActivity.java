@@ -6,9 +6,18 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity {
-    Button profileBtn;
+    private Button profileBtn;
+    private TextView displayText;
+
+    private FirebaseUser currUser;
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -16,6 +25,12 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         profileBtn = findViewById(R.id.profileBtn);
+        displayText = findViewById(R.id.displayText);
+
+        mAuth = FirebaseAuth.getInstance();
+        currUser = mAuth.getCurrentUser();
+
+        displayText.setText("Hello " + currUser.getDisplayName());
     }
 
     public void goToProfile(View v) {

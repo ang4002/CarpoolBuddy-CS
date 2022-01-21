@@ -12,12 +12,14 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
 import com.example.carpoolbuddy.AuthActivity.CompleteSignUpActivity;
 import com.example.carpoolbuddy.AuthActivity.SignInActivity;
 import com.example.carpoolbuddy.Models.Vehicle;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -29,7 +31,6 @@ public class VehiclesInfoActivity extends AppCompatActivity {
     private FirebaseFirestore firestore;
     private ArrayList<Vehicle> allVehicles;
     private VehicleRecyclerViewAdapter adapter;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +51,6 @@ public class VehiclesInfoActivity extends AppCompatActivity {
                         allVehicles.add(document.toObject(Vehicle.class));
                         Log.d("Vehicle", Integer.toString(allVehicles.size()));
                     }
-
                     vehicleRecView.setAdapter(adapter);
                 } else {
                     Log.d("Error: ", task.getException().getMessage());
@@ -66,8 +66,7 @@ public class VehiclesInfoActivity extends AppCompatActivity {
         });
 
         vehicleRecView.setLayoutManager(new LinearLayoutManager(this));
-
-//        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     public void goToVehicleProfile(int position) {
@@ -79,10 +78,11 @@ public class VehiclesInfoActivity extends AppCompatActivity {
         finish();
     }
 
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item){
-//        Intent myIntent = new Intent(getApplicationContext(), MainActivity.class);
-//        startActivityForResult(myIntent, 0);
-//        return true;
-//    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        Intent myIntent = new Intent(getApplicationContext(), MainActivity.class);
+        startActivityForResult(myIntent, 0);
+        finish();
+        return true;
+    }
 }

@@ -52,14 +52,8 @@ public class SignUpActivity extends AppCompatActivity implements AdapterView.OnI
     }
 
     public void updateUI(AuthResult result) {
-        if(result.getAdditionalUserInfo().isNewUser()) {
-            Intent intent = new Intent(SignUpActivity.this, MainActivity.class);
-//            Intent intent = new Intent(getBaseContext(), UserInfoActivity.class);
-            startActivity(intent);
-        } else {
-            Intent intent = new Intent(SignUpActivity.this, MainActivity.class);
-            startActivity(intent);
-        }
+        Intent intent = new Intent(SignUpActivity.this, MainActivity.class);
+        startActivity(intent);
     }
 
     public void signUp(View v) {

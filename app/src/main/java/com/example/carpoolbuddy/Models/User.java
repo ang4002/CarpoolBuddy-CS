@@ -13,8 +13,8 @@ public class User {
     public User() {
     }
 
-    public User(String name, String email, String userType, String uuid) {
-        this.uuid = uuid;
+    public User(String name, String email, String userType, String id) {
+        this.uuid = id;
         this.name = name;
         this.email = email;
         this.userType = userType;

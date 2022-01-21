@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -94,6 +95,8 @@ public class VehicleProfileActivity extends AppCompatActivity {
             leaveCarBtn.setVisibility(View.GONE);
             joinCarBtn.setVisibility(View.VISIBLE);
         }
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     public void joinCar(View v) {
@@ -120,5 +123,13 @@ public class VehicleProfileActivity extends AppCompatActivity {
         finish();
         startActivity(getIntent());
         Toast.makeText(VehicleProfileActivity.this, "You have been removed from this ride!", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        Intent myIntent = new Intent(getApplicationContext(), VehiclesInfoActivity.class);
+        startActivityForResult(myIntent, 0);
+        finish();
+        return true;
     }
 }
