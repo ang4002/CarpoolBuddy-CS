@@ -10,6 +10,21 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CarpoolBuddy">
         <activity
+            android:name=".AuthActivity.CompleteSignUpActivity"
+            android:exported="true" />
+        <activity
+            android:name=".AuthActivity.SignUpActivity"
+            android:exported="true" />
+        <activity
+            android:name=".AuthActivity.SignInActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
             android:name=".userInfoActivity.UserInfoActivity"
             android:exported="true" />
         <activity
@@ -24,15 +39,6 @@
         <activity
             android:name=".UserProfileActivity"
             android:exported="true" />
-        <activity
-            android:name=".AuthActivity.AuthenticationActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
         <activity
             android:name=".MainActivity"
             android:exported="true" />

@@ -23,6 +23,11 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void goToAddVehicle(View v) {
+        Intent intent = new Intent(this, AddVehicleActivity.class);
+        startActivity(intent);
+    }
+
     public void seeVehicles(View v) {
         Intent intent = new Intent(this, VehiclesInfoActivity.class);
         startActivity(intent);
