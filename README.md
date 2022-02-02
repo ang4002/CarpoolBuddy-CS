@@ -4,7 +4,7 @@
 ### Updated on February 2nd, 2022
 # Problem Set 1
 ## Description
-This program allows CIS students to organize carpools to reduce carbon emissions.
+This program allows CIS students to organize carpools.
 ## Libraries/API
 Google maps API
 Openrouteservice API
