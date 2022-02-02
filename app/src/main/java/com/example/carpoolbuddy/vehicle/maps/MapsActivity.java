@@ -42,10 +42,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
-        BufferedReader reader;
-        String line;
-        StringBuffer responseContent = new StringBuffer();
-
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
@@ -59,42 +55,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         CIS = new MarkerOptions()
                 .position(new LatLng(114.198249, 22.283532))
                 .title("CIS");
-
-        //HTTP request to Openrouteservice API
-        try {
-            URL url = new URL("https://api.openrouteservice.org/v2/directions/driving-car?api_key=5b3ce3597851110001cf6248a2977d6d4c334651a2dff0987537e5b5&start=114.20279855072297,%2022.287436087238113&end=114.198249,%2022.283532");
-            connection = (HttpURLConnection) url.openConnection();
-
-            //Request setup
-            connection.setRequestMethod("GET");
-            connection.setConnectTimeout(5000);
-            connection.setReadTimeout(5000);
-
-            int status = connection.getResponseCode();
-
-            if(status > 299) {
-                reader = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
-                while((line = reader.readLine()) != null) {
-                    responseContent.append(line);
-                }
-                reader.close();
-            } else {
-                reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                while((line = reader.readLine()) != null) {
-                    responseContent.append(line);
-                }
-                reader.close();
-            }
-
-            //Parse data and draw polyline
-             parseData(responseContent.toString());
-        } catch(MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            connection.disconnect();
-        }
     }
 
     public void parseData(String responseBody) {
@@ -130,6 +90,46 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         map.animateCamera(CameraUpdateFactory.newLatLngZoom(deez, 10));
         map.addMarker(currLocation);
         map.addMarker(CIS);
+
+        BufferedReader reader;
+        String line;
+        StringBuffer responseContent = new StringBuffer();
+
+        //HTTP request to Openrouteservice API
+        try {
+            URL url = new URL("https://api.openrouteservice.org/v2/directions/driving-car?api_key=5b3ce3597851110001cf6248a2977d6d4c334651a2dff0987537e5b5&start=114.20279855072297,%2022.287436087238113&end=114.198249,%2022.283532");
+            connection = (HttpURLConnection) url.openConnection();
+
+            //Request setup
+            connection.setRequestMethod("GET");
+            connection.setConnectTimeout(5000);
+            connection.setReadTimeout(5000);
+
+            int status = connection.getResponseCode();
+
+            if(status > 299) {
+                reader = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
+                while((line = reader.readLine()) != null) {
+                    responseContent.append(line);
+                }
+                reader.close();
+            } else {
+                reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                while((line = reader.readLine()) != null) {
+                    responseContent.append(line);
+                }
+                reader.close();
+            }
+
+            //Parse data and draw polyline
+            parseData(responseContent.toString());
+        } catch(MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            connection.disconnect();
+        }
     }
 
 //    public String createUrl() {
