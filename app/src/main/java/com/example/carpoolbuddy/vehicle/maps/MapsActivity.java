@@ -1,5 +1,6 @@
 package com.example.carpoolbuddy.vehicle.maps;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.AsyncTask;
@@ -10,9 +11,12 @@ import android.util.Log;
 import android.widget.TextView;
 
 import com.example.carpoolbuddy.R;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import org.json.JSONArray;
@@ -28,11 +32,10 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MapsActivity extends AppCompatActivity {
+public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
     private static HttpURLConnection connection;
-    private TextView test;
-    private List<LatLng> convertedCoords;
     private GoogleMap map;
+    private MarkerOptions currLocation, CIS;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,13 +45,20 @@ public class MapsActivity extends AppCompatActivity {
         BufferedReader reader;
         String line;
         StringBuffer responseContent = new StringBuffer();
-        test = findViewById(R.id.deez);
 
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
+        //Get support map fragment
         SupportMapFragment supportMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         supportMapFragment.getMapAsync(this);
+
+        currLocation = new MarkerOptions()
+                .position(new LatLng(114.20279855072297, 22.287436087238113))
+                .title("Current location");
+        CIS = new MarkerOptions()
+                .position(new LatLng(114.198249, 22.283532))
+                .title("CIS");
 
         //HTTP request to Openrouteservice API
         try {
@@ -77,8 +87,7 @@ public class MapsActivity extends AppCompatActivity {
             }
 
             //Parse data and draw polyline
-            convertedCoords = parseData(responseContent.toString());
-            map.addPolyline(new PolylineOptions().addAll(convertedCoords));
+             parseData(responseContent.toString());
         } catch(MalformedURLException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -88,7 +97,7 @@ public class MapsActivity extends AppCompatActivity {
         }
     }
 
-    public List<LatLng> parseData(String responseBody) {
+    public void parseData(String responseBody) {
         try {
             JSONObject data = new JSONObject(responseBody);
             JSONArray features = data.getJSONArray("features");
@@ -100,19 +109,27 @@ public class MapsActivity extends AppCompatActivity {
 
             for(int i = 0; i < coordinates.length(); i++) {
                 JSONArray currCoords = coordinates.getJSONArray(i);
-                double latitude = (double) currCoords.get(0);
-                double longitude = (double) currCoords.get(1);
-
-                convertedCoords.add(new LatLng(latitude, longitude));
+                double longitude = (double) currCoords.get(0);
+                double latitude = (double) currCoords.get(1);
+                LatLng currLatLng = new LatLng(latitude, longitude);
+                Log.d("latitude", String.valueOf(currLatLng.latitude));
+                convertedCoords.add(currLatLng);
+                Log.d("convertedCoords", String.valueOf(convertedCoords.get(0).latitude));
             }
 
-            test.setText(convertedCoords.toString());
-            return convertedCoords;
+            map.addPolyline(new PolylineOptions().addAll(convertedCoords));
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
 
-        return null;
+    @Override
+    public void onMapReady(@NonNull GoogleMap googleMap) {
+        map = googleMap;
+        LatLng deez = new LatLng(22.287436087238113, 114.20279855072297);
+        map.animateCamera(CameraUpdateFactory.newLatLngZoom(deez, 10));
+        map.addMarker(currLocation);
+        map.addMarker(CIS);
     }
 
 //    public String createUrl() {
