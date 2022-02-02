@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">Carpool Buddy</string>
     <string-array name="roles">
-        <item>Parent</item>
         <item>Student</item>
+        <item>Parent</item>
         <item>Teacher</item>
         <item>Alumni</item>
     </string-array>
@@ -10,4 +10,6 @@
         <item>FossilFuelVehicle</item>
         <item>ElectricVehicle</item>
     </string-array>
+    <string name="title_activity_maps">MapsActivity</string>
+    <string name="title_activity_maps2">MapsActivity2</string>
 </resources>

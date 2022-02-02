@@ -1,10 +1,10 @@
-package com.example.carpoolbuddy.AuthActivity;
+package com.example.carpoolbuddy.auth;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.carpoolbuddy.MainActivity;
-import com.example.carpoolbuddy.Models.User;
 import com.example.carpoolbuddy.R;
+import com.example.carpoolbuddy.user.User;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 
@@ -13,7 +13,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.Spinner;
 
 public class CompleteSignUpActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener{

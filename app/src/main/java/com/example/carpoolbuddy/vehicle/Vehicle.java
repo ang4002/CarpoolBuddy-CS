@@ -1,4 +1,4 @@
-package com.example.carpoolbuddy.Models;
+package com.example.carpoolbuddy.vehicle;
 
 import java.io.Serializable;
 import java.util.*;
@@ -69,8 +69,8 @@ public class Vehicle implements Serializable {
         ridersUIDs.add(riderUID);
     }
 
-    public void setRidersUIDs(ArrayList<String> ridersUIDs) {
-        this.ridersUIDs = ridersUIDs;
+    public void removeRiderUID(String riderUID) {
+        ridersUIDs.remove(riderUID);
     }
 
     public ArrayList<String> getRidersNames() {
@@ -81,8 +81,8 @@ public class Vehicle implements Serializable {
         ridersNames.add(riderName);
     }
 
-    public void setRidersNames(ArrayList<String> ridersNames) {
-        this.ridersNames = ridersNames;
+    public void removeRiderName(String riderName) {
+        ridersNames.remove(riderName);
     }
 
     public boolean isOpen() {

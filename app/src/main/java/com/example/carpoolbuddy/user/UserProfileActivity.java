@@ -1,11 +1,10 @@
-package com.example.carpoolbuddy;
+package com.example.carpoolbuddy.user;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.Editable;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -15,17 +14,16 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.example.carpoolbuddy.AuthActivity.SignInActivity;
-import com.example.carpoolbuddy.AuthActivity.SignUpActivity;
-import com.example.carpoolbuddy.Models.User;
+import com.example.carpoolbuddy.MainActivity;
+import com.example.carpoolbuddy.R;
+import com.example.carpoolbuddy.auth.SignInActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-
-import org.w3c.dom.Document;
 
 public class UserProfileActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     private FirebaseAuth mAuth;
@@ -88,36 +86,37 @@ public class UserProfileActivity extends AppCompatActivity implements AdapterVie
         String name = nameField.getText().toString();
         String role = roleSpinner.getSelectedItem().toString();
 
-        currUserObject.setEmail(email);
-        currUserObject.setName(name);
-        currUserObject.setUserType(role);
+        //Update user name and user type
+        firestore.collection("users").document(currUser.getUid()).update("name", name);
+        firestore.collection("users").document(currUser.getUid()).update("userType", role);
 
+        //Update display name
+        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                .setDisplayName(name)
+                .build();
+
+        currUser.updateProfile(profileUpdates)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                        }
+                    }
+                });
+
+        //Update email
         currUser.updateEmail(email).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if(task.isSuccessful()) {
-                    firestore.collection("users").document(currUserObject.getUuid()).set(currUserObject);
-
-                    emailField.setText(currUserObject.getEmail());
-                    nameField.setText(currUserObject.getName());
-
-                    for(int i = 0; i < roleSpinner.getCount(); i++) {
-                        if(roleSpinner.getItemAtPosition(i).toString().equalsIgnoreCase(role)) {
-                            roleSpinner.setSelection(i);
-                            break;
-                        }
-                    }
-
-                    Toast.makeText(UserProfileActivity.this, "Profile successfully updated!", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(UserProfileActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
         });
+
+        Toast.makeText(UserProfileActivity.this, "Profile successfully updated!", Toast.LENGTH_SHORT).show();
     }
 
     public void signOut(View v) {
-        mAuth.signOut();
         Intent intent = new Intent(this, SignInActivity.class);
         startActivity(intent);
         finish();

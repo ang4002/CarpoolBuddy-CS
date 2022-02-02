@@ -1,6 +1,5 @@
-package com.example.carpoolbuddy;
+package com.example.carpoolbuddy.vehicle;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -13,19 +12,11 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.example.carpoolbuddy.Models.User;
-import com.example.carpoolbuddy.Models.Vehicle;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
+import com.example.carpoolbuddy.MainActivity;
+import com.example.carpoolbuddy.R;
+import com.example.carpoolbuddy.vehicle.maps.MapsActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
-
-import java.util.ArrayList;
 
 public class AddVehicleActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener{
     private EditText carModelField;
@@ -34,8 +25,6 @@ public class AddVehicleActivity extends AppCompatActivity implements AdapterView
     private Spinner vehicleTypeSpinner;
     private FirebaseAuth mAuth;
     private FirebaseUser currUser;
-    private User currUserObject;
-    private FirebaseFirestore firestore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,30 +33,19 @@ public class AddVehicleActivity extends AppCompatActivity implements AdapterView
 
         mAuth = FirebaseAuth.getInstance();
         currUser = mAuth.getCurrentUser();
-        firestore = FirebaseFirestore.getInstance();
 
         carModelField = findViewById(R.id.carModelField);
         capacityField = findViewById(R.id.capacityField);
         basePriceField = findViewById(R.id.basePriceField);
         vehicleTypeSpinner = findViewById(R.id.vehicleTypeSpinner);
 
+//        Setting spinner
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.carTypes, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         vehicleTypeSpinner.setAdapter(adapter);
         vehicleTypeSpinner.setOnItemSelectedListener(this);
 
-        firestore.collection("users").document(currUser.getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if(task.isSuccessful()) {
-                    DocumentSnapshot ds = task.getResult();
-                    currUserObject = ds.toObject(User.class);
-                } else {
-                    Toast.makeText(AddVehicleActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
+//        Adding back button
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
@@ -84,21 +62,20 @@ public class AddVehicleActivity extends AppCompatActivity implements AdapterView
             capacity = Integer.parseInt(capacityString);
             basePrice = Integer.parseInt(basePriceString);
         } catch(Exception e) {
-            Toast.makeText(AddVehicleActivity.this, "Please enter a number for the capacity and/or price.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(AddVehicleActivity.this, "Please enter an integer for the capacity and/or price.", Toast.LENGTH_SHORT).show();
             return;
         }
 
         Vehicle newVehicle = new Vehicle(owner, model, capacity, vehicleType, basePrice);
 
-        currUserObject.addOwnedVehicle(newVehicle.getVehicleID());
-        firestore.collection("vehicles").document(newVehicle.getVehicleID()).set(newVehicle);
-        firestore.collection("users").document(currUser.getUid()).update("ownedVehicles", currUserObject.getOwnedVehicles());
-
         carModelField.getText().clear();
         capacityField.getText().clear();
         basePriceField.getText().clear();
 
-        Toast.makeText(AddVehicleActivity.this, "Vehicle successfully added!", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(this, MapsActivity.class);
+        intent.putExtra("newVehicle", newVehicle);
+        startActivity(intent);
+        finish();
     }
 
     @Override

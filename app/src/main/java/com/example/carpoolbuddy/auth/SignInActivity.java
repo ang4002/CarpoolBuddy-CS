@@ -1,4 +1,4 @@
-package com.example.carpoolbuddy.AuthActivity;
+package com.example.carpoolbuddy.auth;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -38,7 +38,8 @@ public class SignInActivity extends AppCompatActivity {
     private SignInButton googleSignInBtn;
     private FirebaseAuth mAuth;
     private GoogleSignInClient mGoogleSignInClient;
-    private FirebaseFirestore fireStore;
+    private FirebaseFirestore firestore;
+    private FirebaseUser user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +58,9 @@ public class SignInActivity extends AppCompatActivity {
 
         mGoogleSignInClient = GoogleSignIn.getClient(SignInActivity.this, gso);
         mAuth = FirebaseAuth.getInstance();
-        fireStore = FirebaseFirestore.getInstance();
+        firestore = FirebaseFirestore.getInstance();
+        user = mAuth.getCurrentUser();
+
 
         googleSignInBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -129,6 +132,7 @@ public class SignInActivity extends AppCompatActivity {
 
     private void firebaseAuthWithGoogle(String idToken) {
         AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
+
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(SignInActivity.this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -138,8 +142,12 @@ public class SignInActivity extends AppCompatActivity {
                             Log.d(TAG, "signInWithCredential:success");
 
                             AuthResult result = task.getResult();
-                            FirebaseUser user = mAuth.getCurrentUser();
                             Intent intent;
+
+                            if(!user.getEmail().endsWith(".cis.edu.hk")) {
+                                Toast.makeText(SignInActivity.this, "You are not part of CIS!", Toast.LENGTH_SHORT).show();
+                                return;
+                            }
 
                             if(result.getAdditionalUserInfo().isNewUser()) {
                                 intent = new Intent(SignInActivity.this, CompleteSignUpActivity.class);

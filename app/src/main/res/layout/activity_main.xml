@@ -42,7 +42,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:onClick="seeVehicles"
-            android:text="See vehicles" />
+            android:text="View rides" />
 
         <Button
             android:id="@+id/profileBtn2"
@@ -50,7 +50,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:onClick="goToAddVehicle"
-            android:text="Add vehicle" />
+            android:text="Add ride" />
 
     </LinearLayout>
 

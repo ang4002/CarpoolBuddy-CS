@@ -1,25 +1,20 @@
-package com.example.carpoolbuddy;
+package com.example.carpoolbuddy.vehicle;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.app.ActionBar;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
-import android.widget.Toolbar;
 
-import com.example.carpoolbuddy.AuthActivity.CompleteSignUpActivity;
-import com.example.carpoolbuddy.AuthActivity.SignInActivity;
-import com.example.carpoolbuddy.Models.Vehicle;
+import com.example.carpoolbuddy.MainActivity;
+import com.example.carpoolbuddy.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -42,15 +37,19 @@ public class VehiclesInfoActivity extends AppCompatActivity {
         firestore = FirebaseFirestore.getInstance();
         adapter = new VehicleRecyclerViewAdapter(allVehicles);
 
+
         firestore.collection("vehicles").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if(task.isSuccessful()) {
                     for(QueryDocumentSnapshot document : task.getResult()) {
-                        Log.d("Vehicle", document.toObject(Vehicle.class).toString());
-                        allVehicles.add(document.toObject(Vehicle.class));
-                        Log.d("Vehicle", Integer.toString(allVehicles.size()));
+                        Vehicle currVehicle = document.toObject(Vehicle.class);
+
+                        if(currVehicle.isOpen()) {
+                            allVehicles.add(currVehicle);
+                        }
                     }
+                    
                     vehicleRecView.setAdapter(adapter);
                 } else {
                     Log.d("Error: ", task.getException().getMessage());
@@ -76,6 +75,11 @@ public class VehiclesInfoActivity extends AppCompatActivity {
         intent.putExtra("currVehicle", currVehicle);
         startActivity(intent);
         finish();
+    }
+
+    public void goToAddVehicle(View v) {
+        Intent intent = new Intent(this, AddVehicleActivity.class);
+        startActivity(intent);
     }
 
     @Override

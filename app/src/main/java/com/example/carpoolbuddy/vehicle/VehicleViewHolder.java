@@ -1,4 +1,4 @@
-package com.example.carpoolbuddy;
+package com.example.carpoolbuddy.vehicle;
 
 import android.view.View;
 import android.widget.AdapterView;
@@ -7,6 +7,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.carpoolbuddy.R;
 
 public class VehicleViewHolder extends RecyclerView.ViewHolder {
     protected TextView model;

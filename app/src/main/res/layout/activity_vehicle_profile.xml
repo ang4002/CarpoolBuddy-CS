@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".VehicleProfileActivity">
+    tools:context=".vehicle.VehicleProfileActivity">
 
     <TextView
         android:id="@+id/vehicleModel"
@@ -55,27 +55,15 @@
         app:layout_constraintTop_toBottomOf="@+id/basePrice" />
 
     <ImageButton
-        android:id="@+id/joinCarBtn"
+        android:id="@+id/actionsButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:onClick="joinCar"
+        android:onClick="joinLeaveCar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/riders"
         app:srcCompat="@drawable/ic_baseline_group_add_24" />
-
-    <ImageButton
-        android:id="@+id/leaveCarBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:onClick="leaveCar"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/riders"
-        app:srcCompat="@drawable/ic_baseline_logout_24" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

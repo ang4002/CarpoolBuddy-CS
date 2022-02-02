@@ -1,4 +1,4 @@
-package com.example.carpoolbuddy.Models;
+package com.example.carpoolbuddy.user;
 
 import java.util.*;
 
