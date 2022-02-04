@@ -1,10 +1,11 @@
-package com.example.carpoolbuddy.vehicle;
+package com.example.carpoolbuddy.models;
 
 import java.io.Serializable;
 import java.util.*;
 
 public class Vehicle implements Serializable {
     private String owner;
+    private String ownerID;
     private String model;
     private int capacity;
     private String vehicleID;
@@ -13,12 +14,15 @@ public class Vehicle implements Serializable {
     private boolean open;
     private String vehicleType;
     private double basePrice;
+    private double rideCost;
+    private int distance;
 
     public Vehicle() {
     }
 
-    public Vehicle(String owner, String model, int capacity, String vehicleType, int basePrice) {
+    public Vehicle(String owner, String ownerID, String model, int capacity, String vehicleType, double rideCost, int distance) {
         this.owner = owner;
+        this.ownerID = ownerID;
         this.model = model;
         this.capacity = capacity;
         this.vehicleID = UUID.randomUUID().toString();
@@ -26,7 +30,13 @@ public class Vehicle implements Serializable {
         this.ridersNames = new ArrayList<String>();
         this.open = true;
         this.vehicleType = vehicleType;
-        this.basePrice = basePrice;
+        this.basePrice = 15;
+        this.rideCost = rideCost;
+        this.distance = distance;
+    }
+
+    public String getOwnerID() {
+        return ownerID;
     }
 
     public String getOwner() {
@@ -107,5 +117,21 @@ public class Vehicle implements Serializable {
 
     public void setBasePrice(double basePrice) {
         this.basePrice = basePrice;
+    }
+
+    public void setRideCost(double rideCost) {
+        this.rideCost = rideCost;
+    }
+
+    public void setDistance(int distance) {
+        this.distance = distance;
+    }
+
+    public double getRideCost() {
+        return rideCost;
+    }
+
+    public int getDistance() {
+        return distance;
     }
 }

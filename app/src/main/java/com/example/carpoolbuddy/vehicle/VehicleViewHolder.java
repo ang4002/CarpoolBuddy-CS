@@ -24,7 +24,7 @@ public class VehicleViewHolder extends RecyclerView.ViewHolder {
         model = itemView.findViewById(R.id.model);
         capacity = itemView.findViewById(R.id.capacity);
         owner = itemView.findViewById(R.id.owner);
-        basePrice = itemView.findViewById(R.id.basePrice);
+        basePrice = itemView.findViewById(R.id.distance);
         carProfileBtn = itemView.findViewById(R.id.carProfileBtn);
 
         carProfileBtn.setOnClickListener(new View.OnClickListener() {

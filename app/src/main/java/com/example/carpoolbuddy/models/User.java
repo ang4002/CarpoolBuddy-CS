@@ -1,4 +1,4 @@
-package com.example.carpoolbuddy.user;
+package com.example.carpoolbuddy.models;
 
 import java.util.*;
 
@@ -9,6 +9,8 @@ public class User {
     private String userType;
     private double priceMultiplier;
     private ArrayList<String> ownedVehicles;
+    private double balance;
+    private double lagosBalance;
 
     public User() {
     }
@@ -18,6 +20,7 @@ public class User {
         this.name = name;
         this.email = email;
         this.userType = userType;
+        this.balance = 1000;
     }
 
     public String getUuid() {
@@ -66,5 +69,49 @@ public class User {
 
     public void addOwnedVehicle(String vehicle) {
         ownedVehicles.add(vehicle);
+    }
+
+    public void reduceBalance(int amount) {
+        balance -= amount;
+    }
+
+    public void addBalance(int amount) {
+        balance += amount;
+    }
+
+    public void setOwnedVehicles(ArrayList<String> ownedVehicles) {
+        this.ownedVehicles = ownedVehicles;
+    }
+
+    public double getBalance() {
+        return balance;
+    }
+
+    public void setBalance(int balance) {
+        this.balance = balance;
+    }
+
+    public void increaseBalance(double amount) {
+        this.balance += amount;
+    }
+
+    public void decreaseBalance(double amount) {
+        this.balance -= amount;
+    }
+
+    public double getLagosBalance() {
+        return lagosBalance;
+    }
+
+    public void setLagosBalance(double lagosBalance) {
+        this.lagosBalance = lagosBalance;
+    }
+
+    public void increaseLagosBalance(double amount) {
+        this.balance += amount;
+    }
+
+    public void decreaseLagosBalance(double amount) {
+        this.balance -= amount;
     }
 }

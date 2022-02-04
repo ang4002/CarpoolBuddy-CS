@@ -1,4 +1,4 @@
-package com.example.carpoolbuddy.vehicle.maps;
+package com.example.carpoolbuddy.vehicle;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -7,12 +7,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 
 import com.example.carpoolbuddy.R;
-import com.example.carpoolbuddy.vehicle.Vehicle;
-import com.example.carpoolbuddy.vehicle.VehicleProfileActivity;
+import com.example.carpoolbuddy.models.Vehicle;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -46,8 +44,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private GoogleMap map;
     private MarkerOptions pickUpLocation, CIS;
     private FusedLocationProviderClient client;
-    private Button updateBtn;
     private Polyline currPolyline;
+    private int currDistance;
     private boolean routeIsValid;
     private Vehicle newVehicle;
     private FirebaseFirestore firestore;
@@ -65,7 +63,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         //Get support map fragment
         SupportMapFragment supportMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-        updateBtn = findViewById(R.id.updateBtn);
         pickUpLocation = new MarkerOptions()
                 .position(new LatLng(22.287436087238113, 114.20279855072297))
                 .title("Pick-up location").draggable(true);
@@ -88,6 +85,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             JSONObject featuresInner = (JSONObject) features.get(0);
             JSONObject geometry = featuresInner.getJSONObject("geometry");
             JSONArray coordinates = geometry.getJSONArray("coordinates");
+            JSONObject properties = featuresInner.getJSONObject("properties");
+            JSONObject summary = properties.getJSONObject("summary");
+            int distance = summary.getInt("distance");
 
             List<LatLng> convertedCoords = new ArrayList<>();
 
@@ -104,6 +104,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
 
             currPolyline = map.addPolyline(new PolylineOptions().addAll(convertedCoords));
+            currDistance = distance;
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -127,9 +128,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 makeRequest(url);
 
                 if(routeIsValid) {
-                    Toast.makeText(MapsActivity.this, "Route calculated successfully.", Toast.LENGTH_SHORT).show();
+
+                    Toast.makeText(MapsActivity.this, "Route calculated successfully, distance: " + currDistance, Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(MapsActivity.this, "Could not find valid route. Please readjust your marker.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MapsActivity.this, "Could not find valid route! Please readjust your marker.", Toast.LENGTH_SHORT).show();
                     currPolyline.remove();
                 }
             }
@@ -199,7 +201,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     public void addVehicle(View v) {
+        if(!routeIsValid) {
+            Toast.makeText(MapsActivity.this, "Invalid route! Please readjust your marker.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         String vehicleID = newVehicle.getVehicleID();
+        double rideCost = (currDistance / 1000) * 5;
+
+        newVehicle.setRideCost(rideCost + newVehicle.getBasePrice());
+        newVehicle.setDistance(currDistance);
 
         firestore.collection("vehicles").document(vehicleID).set(newVehicle);
         firestore.collection("users").document(currUser.getUid()).update("vehicles", FieldValue.arrayUnion(vehicleID));

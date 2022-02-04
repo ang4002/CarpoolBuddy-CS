@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.carpoolbuddy.R;
+import com.example.carpoolbuddy.models.Vehicle;
 
 import java.util.ArrayList;
 

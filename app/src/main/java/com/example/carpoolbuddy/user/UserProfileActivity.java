@@ -17,6 +17,10 @@ import android.widget.Toast;
 import com.example.carpoolbuddy.MainActivity;
 import com.example.carpoolbuddy.R;
 import com.example.carpoolbuddy.auth.SignInActivity;
+import com.example.carpoolbuddy.models.Alumni;
+import com.example.carpoolbuddy.models.Student;
+import com.example.carpoolbuddy.models.Teacher;
+import com.example.carpoolbuddy.models.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -29,12 +33,12 @@ public class UserProfileActivity extends AppCompatActivity implements AdapterVie
     private FirebaseAuth mAuth;
     private FirebaseUser currUser;
     private FirebaseFirestore firestore;
-    private User currUserObject;
 
     private Button signOutBtn;
     private EditText emailField;
-    private EditText passwordField;
     private EditText nameField;
+    private EditText infoField;
+    private EditText parentUIDsField;
     private Spinner roleSpinner;
 
     @Override
@@ -49,22 +53,70 @@ public class UserProfileActivity extends AppCompatActivity implements AdapterVie
         signOutBtn = findViewById(R.id.signOutBtn);
         emailField = findViewById(R.id.emailField);
         nameField = findViewById(R.id.nameField);
+        infoField = findViewById(R.id.infoField);
         roleSpinner = findViewById(R.id.roleSpinner);
+        parentUIDsField = findViewById(R.id.parentUIDsField);
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.roles, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         roleSpinner.setAdapter(adapter);
         roleSpinner.setOnItemSelectedListener(this);
 
+        getData();
+
+        roleSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                String role = roleSpinner.getItemAtPosition(position).toString();
+
+                if(role.equalsIgnoreCase("teacher")) {
+                    infoField.setHint("In-school title");
+                    infoField.setText("");
+                    parentUIDsField.setVisibility(View.GONE);
+                } else if(role.equalsIgnoreCase("parent")) {
+                    infoField.setHint("Children UIDs");
+                    parentUIDsField.setVisibility(View.GONE);
+                } else if(role.equalsIgnoreCase("alumni")) {
+                    infoField.setHint("Graduation year");
+                    parentUIDsField.setVisibility(View.GONE);
+                } else {
+                    infoField.setHint("Graduation year");
+                    parentUIDsField.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+                // your code here
+            }
+
+        });
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+
+    public void getData() {
         firestore.collection("users").document(currUser.getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if(task.isSuccessful()) {
                     DocumentSnapshot ds = task.getResult();
-                    currUserObject = ds.toObject(User.class);
 
+                    User currUserObject = ds.toObject(User.class);
                     emailField.setText(currUserObject.getEmail());
                     nameField.setText(currUserObject.getName());
+                    String userType = currUserObject.getUserType();
+
+                    if(userType.equalsIgnoreCase("alumni")) {
+                        Alumni alumniObject = ds.toObject(Alumni.class);
+                        infoField.setText(alumniObject.getGraduateYear());
+                    } else if(userType.equalsIgnoreCase("student")) {
+                        Student studentObject = ds.toObject(Student.class);
+                        infoField.setText(studentObject.getGraduatingYear());
+                    } else if(userType.equalsIgnoreCase("teacher")) {
+                        Teacher teacherObject = ds.toObject(Teacher.class);
+                        infoField.setText(teacherObject.getInSchoolTitle());
+                    }
 
                     for(int i = 0; i < roleSpinner.getCount(); i++) {
                         if(roleSpinner.getItemAtPosition(i).toString().equalsIgnoreCase(currUserObject.getUserType())) {
@@ -77,8 +129,6 @@ public class UserProfileActivity extends AppCompatActivity implements AdapterVie
                 }
             }
         });
-
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     public void updateProfile(View v) {

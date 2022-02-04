@@ -88,6 +88,19 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/editTextPassword" />
 
+        <EditText
+            android:id="@+id/parentUIDsField"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:ems="10"
+            android:hint="Parent UIDs"
+            android:inputType="textEmailAddress"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/infoField" />
+
         <Button
             android:id="@+id/button2"
             android:layout_width="0dp"
@@ -98,7 +111,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/infoField" />
+            app:layout_constraintTop_toBottomOf="@+id/parentUIDsField" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

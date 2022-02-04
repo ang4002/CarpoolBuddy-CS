@@ -7,6 +7,15 @@
     tools:context=".vehicle.VehicleProfileActivity">
 
     <TextView
+        android:id="@+id/price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:text="Price"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/capacity" />
+
+    <TextView
         android:id="@+id/vehicleModel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -37,13 +46,13 @@
         app:layout_constraintTop_toBottomOf="@+id/owner" />
 
     <TextView
-        android:id="@+id/basePrice"
+        android:id="@+id/distance"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
-        android:text="Base price"
+        android:text="Distance"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/capacity" />
+        app:layout_constraintTop_toBottomOf="@+id/price" />
 
     <TextView
         android:id="@+id/riders"
@@ -52,14 +61,14 @@
         android:layout_marginStart="24dp"
         android:text="Riders"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/basePrice" />
+        app:layout_constraintTop_toBottomOf="@+id/distance" />
 
     <ImageButton
         android:id="@+id/actionsButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:onClick="joinLeaveCar"
+        android:layout_marginTop="70dp"
+        android:onClick="bookLeaveRide"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"

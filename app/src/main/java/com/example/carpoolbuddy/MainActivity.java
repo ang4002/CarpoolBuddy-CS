@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.carpoolbuddy.user.UserProfileActivity;
+import com.example.carpoolbuddy.user.WalletActivity;
 import com.example.carpoolbuddy.vehicle.AddVehicleActivity;
 import com.example.carpoolbuddy.vehicle.VehiclesInfoActivity;
 import com.google.firebase.auth.FirebaseAuth;
@@ -43,6 +44,12 @@ public class MainActivity extends AppCompatActivity {
 
     public void goToAddVehicle(View v) {
         Intent intent = new Intent(this, AddVehicleActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    public void goToWallet(View v) {
+        Intent intent = new Intent(this, WalletActivity.class);
         startActivity(intent);
         finish();
     }

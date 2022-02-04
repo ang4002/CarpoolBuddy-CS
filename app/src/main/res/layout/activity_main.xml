@@ -45,6 +45,15 @@
             android:text="View rides" />
 
         <Button
+            android:id="@+id/button6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:onClick="goToWallet"
+            android:text="My wallet"
+            app:layout_constraintTop_toBottomOf="@+id/profileBtn2" />
+
+        <Button
             android:id="@+id/profileBtn2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

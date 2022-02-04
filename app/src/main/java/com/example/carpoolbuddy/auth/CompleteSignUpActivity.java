@@ -4,7 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.carpoolbuddy.MainActivity;
 import com.example.carpoolbuddy.R;
-import com.example.carpoolbuddy.user.User;
+import com.example.carpoolbuddy.models.User;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 

@@ -13,6 +13,7 @@ import android.view.View;
 
 import com.example.carpoolbuddy.MainActivity;
 import com.example.carpoolbuddy.R;
+import com.example.carpoolbuddy.models.Vehicle;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -37,7 +38,20 @@ public class VehiclesInfoActivity extends AppCompatActivity {
         firestore = FirebaseFirestore.getInstance();
         adapter = new VehicleRecyclerViewAdapter(allVehicles);
 
+        getAndPopulateData();
 
+        adapter.setOnItemClickListener(new VehicleRecyclerViewAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+                goToVehicleProfile(position);
+            }
+        });
+
+        vehicleRecView.setLayoutManager(new LinearLayoutManager(this));
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+
+    public void getAndPopulateData() {
         firestore.collection("vehicles").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -49,23 +63,13 @@ public class VehiclesInfoActivity extends AppCompatActivity {
                             allVehicles.add(currVehicle);
                         }
                     }
-                    
+
                     vehicleRecView.setAdapter(adapter);
                 } else {
                     Log.d("Error: ", task.getException().getMessage());
                 }
             }
         });
-
-        adapter.setOnItemClickListener(new VehicleRecyclerViewAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(int position) {
-                goToVehicleProfile(position);
-            }
-        });
-
-        vehicleRecView.setLayoutManager(new LinearLayoutManager(this));
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     public void goToVehicleProfile(int position) {
