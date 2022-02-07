@@ -4,7 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.carpoolbuddy.MainActivity;
 import com.example.carpoolbuddy.R;
-import com.example.carpoolbuddy.models.User;
+import com.example.carpoolbuddy.models.users.User;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 
@@ -14,6 +14,13 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+
+/**
+ * This activity allows users who are signing in using google for the first time to select their role.
+ *
+ * @author Alvin Ng
+ * @version 0.1
+ */
 
 public class CompleteSignUpActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener{
     private Spinner roleSpinner;
@@ -33,6 +40,11 @@ public class CompleteSignUpActivity extends AppCompatActivity implements Adapter
         roleSpinner.setOnItemSelectedListener(this);
     }
 
+    /**
+     * This method gets the user's input from this activity's intent, creates a user object, and adds it to firebase.
+     *
+     * @param v the object of the xml file.
+     */
     public void completeSignUp(View v) {
         String role = roleSpinner.getSelectedItem().toString();
 

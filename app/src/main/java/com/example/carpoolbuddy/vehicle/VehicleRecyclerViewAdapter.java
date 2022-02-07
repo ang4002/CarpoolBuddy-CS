@@ -8,7 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.carpoolbuddy.R;
-import com.example.carpoolbuddy.models.Vehicle;
+import com.example.carpoolbuddy.models.vehicles.Vehicle;
 
 import java.util.ArrayList;
 
@@ -42,7 +42,7 @@ public class VehicleRecyclerViewAdapter extends RecyclerView.Adapter<VehicleView
         Vehicle currVehicle = allVehicles.get(position);
 
         String model = currVehicle.getModel();
-        String basePrice = Double.toString(currVehicle.getBasePrice());
+        String basePrice = Double.toString(currVehicle.getRideCost());
         String maxCapacity = Integer.toString(currVehicle.getCapacity());
         int riderNumber = currVehicle.getRidersUIDs().size();
         String owner = currVehicle.getOwner();

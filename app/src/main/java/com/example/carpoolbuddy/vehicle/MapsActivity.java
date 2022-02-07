@@ -10,7 +10,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.example.carpoolbuddy.R;
-import com.example.carpoolbuddy.models.Vehicle;
+import com.example.carpoolbuddy.models.vehicles.Vehicle;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -38,6 +38,13 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+
+/**
+ * This activity allows users to specify the distance of their ride.
+ *
+ * @author Alvin Ng
+ * @version 0.1
+ */
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
     private static HttpURLConnection connection;
@@ -78,38 +85,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         supportMapFragment.getMapAsync(this);
     }
 
-    public void parseData(String responseBody) {
-        try {
-            JSONObject data = new JSONObject(responseBody);
-            JSONArray features = data.getJSONArray("features");
-            JSONObject featuresInner = (JSONObject) features.get(0);
-            JSONObject geometry = featuresInner.getJSONObject("geometry");
-            JSONArray coordinates = geometry.getJSONArray("coordinates");
-            JSONObject properties = featuresInner.getJSONObject("properties");
-            JSONObject summary = properties.getJSONObject("summary");
-            int distance = summary.getInt("distance");
-
-            List<LatLng> convertedCoords = new ArrayList<>();
-
-            for(int i = 0; i < coordinates.length(); i++) {
-                JSONArray currCoords = coordinates.getJSONArray(i);
-                double longitude = (double) currCoords.get(0);
-                double latitude = (double) currCoords.get(1);
-                LatLng currLatLng = new LatLng(latitude, longitude);
-                convertedCoords.add(currLatLng);
-            }
-
-            if(currPolyline != null) {
-                currPolyline.remove();
-            }
-
-            currPolyline = map.addPolyline(new PolylineOptions().addAll(convertedCoords));
-            currDistance = distance;
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
+    /**
+     * This method is triggered when the google map has loaded.
+     *
+     * @param googleMap the map in the activity.
+     */
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         map = googleMap;
@@ -128,8 +108,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 makeRequest(url);
 
                 if(routeIsValid) {
-
-                    Toast.makeText(MapsActivity.this, "Route calculated successfully, distance: " + currDistance, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MapsActivity.this, "Route calculated successfully! Distance: " + currDistance + "m", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(MapsActivity.this, "Could not find valid route! Please readjust your marker.", Toast.LENGTH_SHORT).show();
                     currPolyline.remove();
@@ -142,10 +121,19 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         });
 
+        //Get url, make HTTP request and draw polyline
         String url = getUrl(pickUpLocation.getPosition());
         makeRequest(url);
     }
 
+    /**
+     * This method makes an HTTP request to the Openrouteservice API based on the URL provided, and parses the data by calling
+     * the parseData function, which also draws the polyline on the map.
+     *
+     * @param urlString the url of the API request.
+     * @throws MalformedURLException if the URL provided is invalid.
+     * @throws IOException if an input/output exception occurs.
+     */
     public void makeRequest(String urlString) {
         BufferedReader reader;
         String line;
@@ -192,6 +180,50 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
+    /**
+     * This method converts the data received from the API into a JSON object, and extracts the distance and coordinates
+     * arraylist from it. It then converts the coordinates into a polyline.
+     *
+     * @param responseBody the response received from the API; a JSON object in string format.
+     * @throws JSONException if it encounters a problem while parsing the JSON object.
+     */
+    public void parseData(String responseBody) {
+        try {
+            JSONObject data = new JSONObject(responseBody);
+            JSONArray features = data.getJSONArray("features");
+            JSONObject featuresInner = (JSONObject) features.get(0);
+            JSONObject geometry = featuresInner.getJSONObject("geometry");
+            JSONArray coordinates = geometry.getJSONArray("coordinates");
+            JSONObject properties = featuresInner.getJSONObject("properties");
+            JSONObject summary = properties.getJSONObject("summary");
+            int distance = summary.getInt("distance");
+
+            List<LatLng> convertedCoords = new ArrayList<>();
+
+            for(int i = 0; i < coordinates.length(); i++) {
+                JSONArray currCoords = coordinates.getJSONArray(i);
+                double longitude = (double) currCoords.get(0);
+                double latitude = (double) currCoords.get(1);
+                LatLng currLatLng = new LatLng(latitude, longitude);
+                convertedCoords.add(currLatLng);
+            }
+
+            if(currPolyline != null) {
+                currPolyline.remove();
+            }
+
+            currPolyline = map.addPolyline(new PolylineOptions().addAll(convertedCoords));
+            currDistance = distance;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * This method creates a request URL using the starting point specified by the user.
+     *
+     * @param start the coordinates of the starting point specified by the user.
+     */
     public String getUrl(LatLng start) {
         String startCoords = start.longitude + ",%20" + start.latitude;
 
@@ -200,6 +232,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         return url;
     }
 
+    /**
+     * This method takes the vehicle from the intent and adds it to the database.
+     *
+     * @param v the object of the xml file.
+     */
     public void addVehicle(View v) {
         if(!routeIsValid) {
             Toast.makeText(MapsActivity.this, "Invalid route! Please readjust your marker.", Toast.LENGTH_SHORT).show();
@@ -207,7 +244,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
 
         String vehicleID = newVehicle.getVehicleID();
-        double rideCost = (currDistance / 1000) * 5;
+        double rideCost = (currDistance / 1000) * 8;
 
         newVehicle.setRideCost(rideCost + newVehicle.getBasePrice());
         newVehicle.setDistance(currDistance);

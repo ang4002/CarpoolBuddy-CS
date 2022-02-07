@@ -5,11 +5,11 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.carpoolbuddy.MainActivity;
 import com.example.carpoolbuddy.R;
-import com.example.carpoolbuddy.models.Alumni;
-import com.example.carpoolbuddy.models.Parent;
-import com.example.carpoolbuddy.models.Student;
-import com.example.carpoolbuddy.models.Teacher;
-import com.example.carpoolbuddy.models.User;
+import com.example.carpoolbuddy.models.users.Alumni;
+import com.example.carpoolbuddy.models.users.Parent;
+import com.example.carpoolbuddy.models.users.Student;
+import com.example.carpoolbuddy.models.users.Teacher;
+import com.example.carpoolbuddy.models.users.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -28,6 +28,13 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
+
+/**
+ * This activity allows users to sign up using their email address.
+ *
+ * @author Alvin Ng
+ * @version 0.1
+ */
 
 public class SignUpActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     private EditText emailField;
@@ -88,6 +95,13 @@ public class SignUpActivity extends AppCompatActivity implements AdapterView.OnI
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
+
+    /**
+     * Creates a user object using the user's input, adds it to firebase, and authenticates the user.
+     *
+     * @param v the object of the xml file.
+     * @throws Exception if sign up was unsuccessful (e.g. if the email address is not valid).
+     */
     public void signUp(View v) {
         String email = emailField.getText().toString();
         String password = passwordField.getText().toString();

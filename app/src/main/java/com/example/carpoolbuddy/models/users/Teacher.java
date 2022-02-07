@@ -1,4 +1,4 @@
-package com.example.carpoolbuddy.models;
+package com.example.carpoolbuddy.models.users;
 
 public class Teacher extends User {
     String inSchoolTitle;

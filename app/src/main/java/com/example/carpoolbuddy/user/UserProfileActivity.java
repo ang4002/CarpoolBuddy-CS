@@ -17,10 +17,10 @@ import android.widget.Toast;
 import com.example.carpoolbuddy.MainActivity;
 import com.example.carpoolbuddy.R;
 import com.example.carpoolbuddy.auth.SignInActivity;
-import com.example.carpoolbuddy.models.Alumni;
-import com.example.carpoolbuddy.models.Student;
-import com.example.carpoolbuddy.models.Teacher;
-import com.example.carpoolbuddy.models.User;
+import com.example.carpoolbuddy.models.users.Alumni;
+import com.example.carpoolbuddy.models.users.Student;
+import com.example.carpoolbuddy.models.users.Teacher;
+import com.example.carpoolbuddy.models.users.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -28,6 +28,13 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+/**
+ * This activity allows users to view and update their profile.
+ *
+ * @author Alvin Ng
+ * @version 0.1
+ */
 
 public class UserProfileActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     private FirebaseAuth mAuth;
@@ -95,6 +102,9 @@ public class UserProfileActivity extends AppCompatActivity implements AdapterVie
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
+    /**
+     * This method fetches the user's data from firebase.
+     */
     public void getData() {
         firestore.collection("users").document(currUser.getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -131,6 +141,11 @@ public class UserProfileActivity extends AppCompatActivity implements AdapterVie
         });
     }
 
+    /**
+     * This method updates the user's profile based on the changes they have made.
+     *
+     * @param v the object from the xml file.
+     */
     public void updateProfile(View v) {
         String email = emailField.getText().toString();
         String name = nameField.getText().toString();

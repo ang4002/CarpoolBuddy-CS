@@ -6,7 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.carpoolbuddy.MainActivity;
 import com.example.carpoolbuddy.R;
-import com.example.carpoolbuddy.models.User;
+import com.example.carpoolbuddy.models.users.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -21,6 +21,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
+
+/**
+ * This activity allows users to view their wallet, including their balance and their lagosBalance.
+ *
+ * @author Alvin Ng
+ * @version 0.1
+ */
 
 public class WalletActivity extends AppCompatActivity {
     private TextView balance;
@@ -48,6 +55,9 @@ public class WalletActivity extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
     }
 
+    /**
+     * This method fetches the user's data from firebase and displays it.
+     */
     public void getData() {
         firestore.collection("users").document(currUser.getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -65,6 +75,11 @@ public class WalletActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * This method combines the user's balance with their lagosBalance, and updates firebase accordingly.
+     *
+     * @param v the object from the xml file.
+     */
     public void topUp(View v) {
         if(currUserObject.getLagosBalance() == 0) {
             Toast.makeText(WalletActivity.this, "You have no lagos coins!", Toast.LENGTH_SHORT).show();

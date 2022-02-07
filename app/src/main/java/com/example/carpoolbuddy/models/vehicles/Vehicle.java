@@ -1,4 +1,4 @@
-package com.example.carpoolbuddy.models;
+package com.example.carpoolbuddy.models.vehicles;
 
 import java.io.Serializable;
 import java.util.*;

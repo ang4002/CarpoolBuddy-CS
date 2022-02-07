@@ -28,6 +28,13 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+/**
+ * This activity allows users to sign in using google sign-in or using their email.
+ *
+ * @author Alvin Ng
+ * @version 0.1
+ */
+
 public class SignInActivity extends AppCompatActivity {
     private static final String TAG = "GoogleActivity";
     public static final int RC_SIGN_IN = 9001;
@@ -77,6 +84,14 @@ public class SignInActivity extends AppCompatActivity {
             }
         });
     }
+
+    /**
+     * This method takes the email and password input by the user and brings them to the MainActivity if there is a
+     * matching user on firebase.
+     *
+     * @param v the object of the xml file.
+     * @throws Exception if the sign in is unsuccessful (e.g. if the user does not exist)
+     */
 
     public void signIn(View v) {
         String emailString = emailField.getText().toString();
@@ -130,6 +145,15 @@ public class SignInActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * This method takes in the user's idToken, and signs them in using the credential created using said token
+     * that will allow firebase to authenticate the user. If the user is logging in for the first time, their name,
+     * email, and id will be stored in an intent, and they will be sent to the CompleteSignUp activity. Otherwise,
+     * they will be instantly sent to the MainActivity.
+     *
+     * @param idToken an ID token used to create a firebase authentication credential
+     * @throws Exception if the sign in is unsuccessful (e.g. if the user does not exist)
+     */
     private void firebaseAuthWithGoogle(String idToken) {
         AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
 
@@ -149,6 +173,7 @@ public class SignInActivity extends AppCompatActivity {
                                 return;
                             }
 
+                            // If the user is new, send them to the CompleteSignUpActivity class
                             if(result.getAdditionalUserInfo().isNewUser()) {
                                 intent = new Intent(SignInActivity.this, CompleteSignUpActivity.class);
                                 Bundle extras = new Bundle();

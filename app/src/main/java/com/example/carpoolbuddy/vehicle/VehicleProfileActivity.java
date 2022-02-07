@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
@@ -12,8 +13,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.carpoolbuddy.R;
-import com.example.carpoolbuddy.models.Vehicle;
-import com.example.carpoolbuddy.models.User;
+import com.example.carpoolbuddy.models.vehicles.Vehicle;
+import com.example.carpoolbuddy.models.users.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -22,10 +23,18 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+/**
+ * This activity allows users to view, join, leave, open, or close a vehicle.
+ *
+ * @author Alvin Ng
+ * @version 0.1
+ */
+
 public class VehicleProfileActivity extends AppCompatActivity {
     private TextView vehicleModel;
     private TextView price;
     private TextView riders;
+    private TextView type;
     private TextView owner;
     private TextView capacity;
     private TextView distance;
@@ -37,7 +46,6 @@ public class VehicleProfileActivity extends AppCompatActivity {
     private User currUserObject;
     private double balance;
     private double rideCost;
-    private double lagosBalance;
     private double lagosBalanceGain;
 
     @Override
@@ -56,6 +64,7 @@ public class VehicleProfileActivity extends AppCompatActivity {
         capacity = findViewById(R.id.capacity);
         actionsButton = findViewById(R.id.actionsButton);
         distance = findViewById(R.id.distance);
+        type = findViewById(R.id.type);
 
         // Getting current vehicle from intent
         Intent intent = getIntent();
@@ -65,10 +74,18 @@ public class VehicleProfileActivity extends AppCompatActivity {
         String maxCapacityString = Integer.toString(currVehicle.getCapacity());
         String riderNumberString = Integer.toString(currVehicle.getRidersNames().size());
         String ownerString = currVehicle.getOwner();
+        String typeString = currVehicle.getVehicleType();
         String capacityString = riderNumberString + "/" + maxCapacityString;
         String ridersString = "";
+        double distanceInKm = ((double) currVehicle.getDistance()) / 1000;
+        double roundedDistance = Math.round(distanceInKm * 100.0) / 100.0;
+
         rideCost = currVehicle.getRideCost();
-        lagosBalanceGain = ((currVehicle.getDistance() / 1000) * 1);
+        if(typeString.equalsIgnoreCase("electriccar")) {
+            lagosBalanceGain = ((currVehicle.getDistance() / 1000) * 3);
+        } else {
+            lagosBalanceGain = ((currVehicle.getDistance() / 1000) * 0.5);
+        }
 
         if(currVehicle.getRidersNames().isEmpty()) {
             ridersString = "none";
@@ -80,8 +97,10 @@ public class VehicleProfileActivity extends AppCompatActivity {
         capacity.setText("Capacity: " + capacityString + " people");
         vehicleModel.setText("Model: " + modelString);
         riders.setText("Riders: " + ridersString);
-        distance.setText("Distance: " + (currVehicle.getDistance() / 1000) + "km");
-        price.setText("Price: " + rideCost);
+        riders.setText("Riders: " + ridersString);
+        distance.setText("Distance: " + roundedDistance + "km");
+        price.setText("Price: $" + rideCost);
+        type.setText("Type: " + typeString);
 
         getData();
         //Changing button image and method
@@ -89,7 +108,6 @@ public class VehicleProfileActivity extends AppCompatActivity {
         //adding back button
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
-
     public void getData() {
         firestore.collection("users").document(currUser.getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -99,7 +117,6 @@ public class VehicleProfileActivity extends AppCompatActivity {
 
                     currUserObject = ds.toObject(User.class);
                     balance = currUserObject.getBalance();
-                    lagosBalance = currUserObject.getLagosBalance();
                 } else {
                     Toast.makeText(VehicleProfileActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                 }
@@ -107,6 +124,10 @@ public class VehicleProfileActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * This method sets the button to a certain image and attaches an onClick listener to it based on whether or not the
+     * user owns the vehicle.
+     **/
     public void setUpButtons() {
         if(currVehicle.getOwnerID().equals(currUser.getUid())) {
             actionsButton.setOnClickListener(new View.OnClickListener() {
@@ -137,6 +158,9 @@ public class VehicleProfileActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * This method handles opening or closing the car, and updates the firebase database accordingly.
+     **/
     public void openCloseCar(View v) {
         if(currVehicle.isOpen()) {
             firestore.collection("vehicles").document(currVehicle.getVehicleID()).update("open", false);
@@ -161,39 +185,61 @@ public class VehicleProfileActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * This method books the ride for the user, and updates their balance and lagosBalance. Their UID and name will be added
+     * to the riderUIDs and riderNames arraylists in the vehicle. The user who owns the vehicle will have their balance
+     * incremented by the cost of the ride.
+     **/
     public void bookRide() {
-        if(currVehicle.getCapacity() == currVehicle.getRidersUIDs().size()) {
-            Toast.makeText(VehicleProfileActivity.this, "This ride has already reached maximum capacity.", Toast.LENGTH_SHORT).show();
-            return;
-        } else if(balance < rideCost) {
-            Toast.makeText(VehicleProfileActivity.this, "Insufficient funds!", Toast.LENGTH_SHORT).show();
-            return;
-        }
+        firestore.collection("users").document(currUser.getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(task.isSuccessful()) {
+                    DocumentSnapshot ds = task.getResult();
+                    currUserObject = ds.toObject(User.class);
+                    balance = currUserObject.getBalance();
 
-        currVehicle.addRiderUID(currUser.getUid());
-        currVehicle.addRiderName(currUser.getDisplayName());
+                    if(currVehicle.getCapacity() == currVehicle.getRidersUIDs().size()) {
+                        Toast.makeText(VehicleProfileActivity.this, "This ride has already reached maximum capacity.", Toast.LENGTH_SHORT).show();
+                        return;
+                    } else if(balance < rideCost) {
+                        Toast.makeText(VehicleProfileActivity.this, "Insufficient funds!", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    currVehicle.addRiderUID(currUser.getUid());
+                    currVehicle.addRiderName(currUser.getDisplayName());
 
-        String ridersNames = currVehicle.getRidersNames().toString();
-        String riderNumberString = Integer.toString(currVehicle.getRidersNames().size());
-        String maxCapacityString = Integer.toString(currVehicle.getCapacity());
-        String capacityString = riderNumberString + "/" + maxCapacityString;
+                    String ridersNames = currVehicle.getRidersNames().toString();
+                    String riderNumberString = Integer.toString(currVehicle.getRidersNames().size());
+                    String maxCapacityString = Integer.toString(currVehicle.getCapacity());
+                    String capacityString = riderNumberString + "/" + maxCapacityString;
 
-        ridersNames = ridersNames.substring(1, ridersNames.length() - 1);
+                    ridersNames = ridersNames.substring(1, ridersNames.length() - 1);
 
-        riders.setText("Riders: " + ridersNames);
-        capacity.setText("Capacity: " + capacityString + " people");
+                    riders.setText("Riders: " + ridersNames);
+                    capacity.setText("Capacity: " + capacityString + " people");
 
-        firestore.collection("vehicles").document(currVehicle.getVehicleID()).set(currVehicle);
+                    firestore.collection("vehicles").document(currVehicle.getVehicleID()).set(currVehicle);
 
-        //Update user balances
-        firestore.collection("users").document(currUser.getUid()).update("balance", FieldValue.increment(-rideCost));
-        firestore.collection("users").document(currUser.getUid()).update("lagosBalance", FieldValue.increment(lagosBalanceGain));
-        firestore.collection("users").document(currVehicle.getOwnerID()).update("balance", FieldValue.increment(rideCost));
+                    //Update user balances
+                    firestore.collection("users").document(currUser.getUid()).update("balance", FieldValue.increment(-rideCost));
+                    firestore.collection("users").document(currUser.getUid()).update("lagosBalance", FieldValue.increment(lagosBalanceGain));
+                    firestore.collection("users").document(currVehicle.getOwnerID()).update("balance", FieldValue.increment(rideCost));
 
-        Toast.makeText(VehicleProfileActivity.this, "You have been added to this ride!", Toast.LENGTH_SHORT).show();
-        actionsButton.setImageResource(R.drawable.ic_baseline_logout_24);
+                    Toast.makeText(VehicleProfileActivity.this, "You have been added to this ride!", Toast.LENGTH_SHORT).show();
+                    actionsButton.setImageResource(R.drawable.ic_baseline_logout_24);
+                } else {
+                    Toast.makeText(VehicleProfileActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
+    /**
+     * This method unbooks a ride for the user, and updates their balance and lagosBalance. Their UID and name will be removed
+     * to the riderUIDs and riderNames arraylists in the vehicle. The user who owns the vehicle will have their balance
+     * decremented by the cost of the ride.
+     **/
     public void leaveRide() {
         currVehicle.removeRiderUID(currUser.getUid());
         currVehicle.removeRiderName(currUser.getDisplayName());

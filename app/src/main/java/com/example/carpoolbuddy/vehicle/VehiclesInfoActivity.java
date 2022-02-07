@@ -13,7 +13,7 @@ import android.view.View;
 
 import com.example.carpoolbuddy.MainActivity;
 import com.example.carpoolbuddy.R;
-import com.example.carpoolbuddy.models.Vehicle;
+import com.example.carpoolbuddy.models.vehicles.Vehicle;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -21,6 +21,13 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+
+/**
+ * This activity allows users to view all of the currently available vehicles.
+ *
+ * @author Alvin Ng
+ * @version 0.1
+ */
 
 public class VehiclesInfoActivity extends AppCompatActivity {
     private RecyclerView vehicleRecView;
@@ -51,6 +58,10 @@ public class VehiclesInfoActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
+    /**
+     * This method fetches data from firebase and populates the recyclerView using said data.
+     *
+     */
     public void getAndPopulateData() {
         firestore.collection("vehicles").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
@@ -71,7 +82,6 @@ public class VehiclesInfoActivity extends AppCompatActivity {
             }
         });
     }
-
     public void goToVehicleProfile(int position) {
         Vehicle currVehicle = allVehicles.get(position);
         Intent intent = new Intent(VehiclesInfoActivity.this, VehicleProfileActivity.class);
